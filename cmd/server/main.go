@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/bootdotdev/learn-pub-sub-starter/internal/pubsub/PublishJson"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -19,6 +20,14 @@ func main() {
 	}
 	defer connection.Close()
 	fmt.Printf("Connection to localhost successful\n")
+	conChan, err := connection.Channel()
+	if err != nil {
+		log.Printf("encountered an error in the connection Channel: %v", err)
+		connection.Close()
+		os.Exit(2)
+	}
+
+	err = PublishJSON(conChan)
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt)
